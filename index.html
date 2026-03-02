@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TruthLens — AI Fake News Detector</title>
+  <meta name="description" content="TruthLens uses advanced AI to analyze news articles and detect whether they are real or fake with confidence scores." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Animated background -->
+  <div class="bg-scene">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="grid-overlay"></div>
+    <div class="noise-overlay"></div>
+  </div>
+
+  <!-- Floating particles -->
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="16" cy="16" r="14" stroke="url(#logoGrad)" stroke-width="2"/>
+          <path d="M10 16l4 4 8-8" stroke="url(#logoGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#a78bfa"/>
+              <stop offset="1" stop-color="#38bdf8"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <span class="logo-text">TruthLens</span>
+    </div>
+    <div class="header-badge">
+      <span class="badge-dot"></span>
+      AI-Powered
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="main">
+
+    <!-- Hero section -->
+    <section class="hero" id="view-idle">
+      <div class="hero-eyebrow">
+        <span class="chip">Gen AI Project</span>
+      </div>
+      <h1 class="hero-title">
+        Detect <span class="gradient-text">Fake News</span><br/>Instantly
+      </h1>
+      <p class="hero-subtitle">
+        Paste any news article URL and our trained AI model will analyze its authenticity,<br/>
+        giving you a real-time credibility score in seconds.
+      </p>
+
+      <!-- Input card -->
+      <div class="input-card">
+        <div class="input-label">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          News Article URL
+        </div>
+        <div class="input-wrapper">
+          <input
+            type="url"
+            id="news-url"
+            class="url-input"
+            placeholder="https://example.com/news-article"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button id="analyze-btn" class="analyze-btn" onclick="analyzeNews()">
+            <span class="btn-text">Analyze</span>
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </button>
+        </div>
+        <div class="input-hint">
+          <span id="url-error" class="error-msg hidden">Please enter a valid URL starting with http:// or https://</span>
+          <span id="url-hint" class="hint-text">Works with CNN, BBC, Reuters, Times of India, NDTV, and more</span>
+        </div>
+      </div>
+
+      <!-- Feature pills -->
+      <div class="feature-pills">
+        <div class="pill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Trained ML Model
+        </div>
+        <div class="pill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          Real-time Analysis
+        </div>
+        <div class="pill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Confidence Score
+        </div>
+      </div>
+    </section>
+
+    <!-- Analyzing state -->
+    <section class="analyzing-screen hidden" id="view-analyzing">
+      <div class="analyzing-card">
+        <div class="scan-animation">
+          <div class="scan-ring ring-1"></div>
+          <div class="scan-ring ring-2"></div>
+          <div class="scan-ring ring-3"></div>
+          <div class="scan-core">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="url(#scanGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+              <defs>
+                <linearGradient id="scanGrad" x1="0" y1="0" x2="24" y2="24">
+                  <stop stop-color="#a78bfa"/>
+                  <stop offset="1" stop-color="#38bdf8"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
+        <h2 class="analyzing-title">Analyzing Article…</h2>
+        <p class="analyzing-url" id="analyzing-url-display"></p>
+        <div class="step-list">
+          <div class="step" id="step-1">
+            <div class="step-dot"></div>
+            <span>Fetching article content</span>
+            <span class="step-status" id="step-1-status">...</span>
+          </div>
+          <div class="step" id="step-2">
+            <div class="step-dot"></div>
+            <span>Extracting text features</span>
+            <span class="step-status" id="step-2-status"></span>
+          </div>
+          <div class="step" id="step-3">
+            <div class="step-dot"></div>
+            <span>Running ML classification</span>
+            <span class="step-status" id="step-3-status"></span>
+          </div>
+          <div class="step" id="step-4">
+            <div class="step-dot"></div>
+            <span>Computing confidence score</span>
+            <span class="step-status" id="step-4-status"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Result section -->
+    <section class="result-screen hidden" id="view-result">
+      <div class="result-grid">
+
+        <!-- Main verdict card -->
+        <div class="verdict-card" id="verdict-card">
+          <div class="verdict-header">
+            <div class="verdict-icon" id="verdict-icon"></div>
+            <div>
+              <div class="verdict-label">Verdict</div>
+              <div class="verdict-text" id="verdict-text"></div>
+            </div>
+          </div>
+
+          <!-- Gauge -->
+          <div class="gauge-container">
+            <svg class="gauge-svg" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Background track -->
+              <path d="M 20 110 A 80 80 0 0 1 180 110" stroke="#1e293b" stroke-width="16" stroke-linecap="round" fill="none"/>
+              <!-- Colored arc -->
+              <path id="gauge-arc" d="M 20 110 A 80 80 0 0 1 180 110" stroke="url(#gaugeGrad)" stroke-width="16" stroke-linecap="round" fill="none"
+                    stroke-dasharray="251.2" stroke-dashoffset="251.2"/>
+              <!-- Needle -->
+              <line id="gauge-needle" x1="100" y1="110" x2="100" y2="40" stroke="white" stroke-width="2.5" stroke-linecap="round" transform-origin="100 110"/>
+              <circle cx="100" cy="110" r="5" fill="white"/>
+              <!-- Labels -->
+              <text x="14" y="128" fill="#64748b" font-size="10" font-family="Inter">FAKE</text>
+              <text x="155" y="128" fill="#64748b" font-size="10" font-family="Inter">REAL</text>
+              <!-- Percentage text -->
+              <text id="gauge-pct-text" x="100" y="90" fill="white" font-size="22" font-weight="700" text-anchor="middle" font-family="Inter">0%</text>
+              <text x="100" y="106" fill="#94a3b8" font-size="9" text-anchor="middle" font-family="Inter">REAL PROBABILITY</text>
+              <defs>
+                <linearGradient id="gaugeGrad" x1="20" y1="0" x2="180" y2="0" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#ef4444"/>
+                  <stop offset="0.5" stop-color="#f59e0b"/>
+                  <stop offset="1" stop-color="#22c55e"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+
+          <!-- Score bars -->
+          <div class="score-bars">
+            <div class="score-bar-item">
+              <div class="bar-label">
+                <span>🟢 Real News</span>
+                <span class="bar-pct" id="real-pct">0%</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill bar-real" id="real-bar"></div>
+              </div>
+            </div>
+            <div class="score-bar-item">
+              <div class="bar-label">
+                <span>🔴 Fake News</span>
+                <span class="bar-pct" id="fake-pct">0%</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill bar-fake" id="fake-bar"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info cards column -->
+        <div class="info-column">
+          <!-- Confidence card -->
+          <div class="info-card">
+            <div class="info-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Model Confidence
+            </div>
+            <div class="confidence-ring-wrap">
+              <svg class="confidence-ring" viewBox="0 0 80 80">
+                <circle cx="40" cy="40" r="30" stroke="#1e293b" stroke-width="8" fill="none"/>
+                <circle id="conf-ring-fill" cx="40" cy="40" r="30" stroke="url(#confGrad)" stroke-width="8" fill="none"
+                  stroke-dasharray="188.4" stroke-dashoffset="188.4"
+                  stroke-linecap="round" transform="rotate(-90 40 40)"/>
+                <text id="conf-pct-text" x="40" y="45" fill="white" font-size="14" font-weight="700" text-anchor="middle" font-family="Inter">-</text>
+                <defs>
+                  <linearGradient id="confGrad" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#a78bfa"/>
+                    <stop offset="1" stop-color="#38bdf8"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <p class="confidence-desc" id="confidence-desc">High confidence</p>
+          </div>
+
+          <!-- URL analyzed -->
+          <div class="info-card url-card">
+            <div class="info-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              Analyzed URL
+            </div>
+            <p class="url-display" id="result-url-display"></p>
+            <a class="url-open-link" id="result-url-link" href="#" target="_blank" rel="noopener">
+              Open Article →
+            </a>
+          </div>
+
+          <!-- Risk factors -->
+          <div class="info-card" id="risk-card">
+            <div class="info-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Analysis Signals
+            </div>
+            <ul class="signals-list" id="signals-list"></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="result-actions">
+        <button class="action-btn secondary" onclick="resetApp()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+          Analyze Another
+        </button>
+        <button class="action-btn primary" onclick="shareResult()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Share Result
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>TruthLens &nbsp;·&nbsp; Gen AI Project &nbsp;·&nbsp; Powered by a trained ML classifier</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
